@@ -75,12 +75,14 @@ jobs:
           /workdir/openwrt/build_dir/toolchain*
           /workdir/openwrt/staging_dir/toolchain*
         key: toolchain
+        update: true
         
     - name: Cache Ccache Always
       uses: lzy0702/cache-always@main
       with:
         path: /workdir/openwrt/.ccache
         key: ccache
+        update: true
 
 #    - name: Load custom feeds
 #      run: |
