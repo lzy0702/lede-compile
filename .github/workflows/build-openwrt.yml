@@ -76,8 +76,8 @@ jobs:
           /workdir/openwrt/staging_dir/toolchain*
         key: toolchain
         
-    - name: Cache CCache
-      uses: actions/cache@main
+    - name: Cache Ccache Always
+      uses: lzy0702/cache-always@main
       with:
         path: /workdir/openwrt/.ccache
         key: ccache
@@ -110,6 +110,7 @@ jobs:
       run: |
         cd openwrt
         make defconfig
+        find staging_dir/ -type f -name ".prepared" -exec rm -f {} \;
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
