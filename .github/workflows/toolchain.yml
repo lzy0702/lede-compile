@@ -55,19 +55,19 @@ jobs:
     - name: Cache Toolchain
       uses: actions/cache@main
       with:
-        path: openwrt
+        path: /workdir/openwrt/toolchain
         key: toolchain
         
     - name: Cache Tools
       uses: actions/cache@main
       with:
-        path: openwrt
+        path: /workdir/openwrt/tools
         key: tools
         
     - name: Cache CCache
       uses: actions/cache@main
       with:
-        path: openwrt
+        path: /workdir/openwrt/.ccache
         key: ccache
 
 #    - name: Load custom feeds
