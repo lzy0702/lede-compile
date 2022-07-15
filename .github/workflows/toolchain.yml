@@ -53,15 +53,25 @@ jobs:
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
         
        
-    - name: Cache Toolchain
+    - name: Cache Toolchain1
       uses: actions/cache@main
       with:
-        path: |
-          /workdir/openwrt/toolchain
-          /workdir/openwrt/tools
-          /workdir/build_dir/toolchain-x86_64_gcc-11.2.0_musl
-          /workdir/staging_dir/toolchain-x86_64_gcc-11.2.0_musl
-        key: tools
+        path: /workdir/openwrt/toolchain
+        
+    - name: Cache Toolchain2
+      uses: actions/cache@main
+      with:
+        path: /workdir/openwrt/tools
+        
+    - name: Cache Toolchain3
+      uses: actions/cache@main
+      with:
+        path: /workdir/build_dir/toolchain*
+        
+    - name: Cache Toolchain4
+      uses: actions/cache@main
+      with:
+        path: /workdir/staging_dir/toolchain*
         
     - name: Cache CCache
       uses: actions/cache@main
