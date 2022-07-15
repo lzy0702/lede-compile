@@ -97,9 +97,7 @@ jobs:
       run: |
         cd openwrt
         make defconfig
-        make toolchain/download -j8
-        find dl -size -1024c -exec ls -l {} \;
-        find dl -size -1024c -exec rm -f {} \;
+        make toolchain/download -j8 -l 1.8
         
     - name: Compile toolchain
       id: compile1
