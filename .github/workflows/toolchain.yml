@@ -52,16 +52,15 @@ jobs:
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
         
+       
     - name: Cache Toolchain
       uses: actions/cache@main
       with:
-        path: /workdir/openwrt/toolchain
-        key: toolchain
-        
-    - name: Cache Tools
-      uses: actions/cache@main
-      with:
-        path: /workdir/openwrt/tools
+        path: |
+          /workdir/openwrt/toolchain
+          /workdir/openwrt/tools
+          /workdir/build_dir/toolchain*
+          /workdir/staging_dir/toolchain*
         key: tools
         
     - name: Cache CCache
@@ -98,7 +97,7 @@ jobs:
       run: |
         cd openwrt
         make defconfig
-        make download -j8
+        make toolchain/download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
         
@@ -110,20 +109,3 @@ jobs:
         make toolchain/install -j$(nproc) || make toolchain/install -j1 || make toolchain/install -j1 V=s
         echo "::set-output name=status::success"
     
-    - name: Prepare kernel files
-      id: kernel_prepare
-      run:  |
-        cd openwrt
-        make target/linux/prepare
-        
-    - name: Load custom kernel configuration
-      id: config2
-      run: |    
-        mkdir -p openwrt/tmp
-        echo "openwrt/tmp/ made"
-        [ -e $KERNEL_CONFIG_FILE ] && mv $KERNEL_CONFIG_FILE openwrt/tmp/.config
-        echo ".config moved to tmp"
-        mv openwrt/tmp/.config openwrt/build_dir/target-x86_64_musl/linux-x86_64/linux-5.15*/
-        echo ".config moved to build_dir"
-        [ -e $KERNEL_CONFIG_FILE2 ] && mv $KERNEL_CONFIG_FILE2 openwrt/target/linux/x86/config-5.15
-        echo "config-5.15 moved to target"
