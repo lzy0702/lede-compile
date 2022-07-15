@@ -63,8 +63,8 @@ jobs:
           /workdir/openwrt/staging_dir/toolchain*
         key: toolchain
         
-    - name: Cache CCache
-      uses: actions/cache@main
+    - name: Cache Ccache Always
+      uses: lzy0702/cache-always@main
       with:
         path: /workdir/openwrt/.ccache
         key: ccache
