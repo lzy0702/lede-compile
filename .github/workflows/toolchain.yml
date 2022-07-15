@@ -59,8 +59,8 @@ jobs:
         path: |
           /workdir/openwrt/toolchain
           /workdir/openwrt/tools
-          /workdir/build_dir/toolchain*
-          /workdir/staging_dir/toolchain*
+          /workdir/build_dir/toolchain-x86_64_gcc-11.2.0_musl
+          /workdir/staging_dir/toolchain-x86_64_gcc-11.2.0_musl
         key: tools
         
     - name: Cache CCache
