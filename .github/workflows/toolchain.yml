@@ -56,25 +56,11 @@ jobs:
     - name: Cache Toolchain1
       uses: actions/cache@main
       with:
-        path: /workdir/openwrt/toolchain
-        key: toolchain
-        
-    - name: Cache Toolchain2
-      uses: actions/cache@main
-      with:
-        path: /workdir/openwrt/tools
-        key: toolchain
-        
-    - name: Cache Toolchain3
-      uses: actions/cache@main
-      with:
-        path: /workdir/build_dir/toolchain*
-        key: toolchain
-        
-    - name: Cache Toolchain4
-      uses: actions/cache@main
-      with:
-        path: /workdir/staging_dir/toolchain*
+        path: |
+          /workdir/openwrt/toolchain
+          /workdir/openwrt/tools
+          /workdir/openwrt/build_dir/toolchain*
+          /workdir/openwrt/staging_dir/toolchain*
         key: toolchain
         
     - name: Cache CCache
