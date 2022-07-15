@@ -70,21 +70,25 @@ jobs:
       uses: actions/cache@main
       with:
         path: /workdir/openwrt/toolchain
+        key: toolchain
         
     - name: Cache Toolchain2
       uses: actions/cache@main
       with:
         path: /workdir/openwrt/tools
+        key: toolchain
         
     - name: Cache Toolchain3
       uses: actions/cache@main
       with:
         path: /workdir/build_dir/toolchain*
+        key: toolchain
         
     - name: Cache Toolchain4
       uses: actions/cache@main
       with:
         path: /workdir/staging_dir/toolchain*
+        key: toolchain
         
     - name: Cache CCache
       uses: actions/cache@main
