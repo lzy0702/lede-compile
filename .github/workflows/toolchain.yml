@@ -91,13 +91,7 @@ jobs:
         chmod +x $DIY_P2_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
-        
-    - name: Download package pre-config
-      id: package1
-      run: |
-        cd openwrt
         make defconfig
-        make toolchain/download -j8 -l 1.8
         
     - name: Compile toolchain
       id: compile1
