@@ -65,23 +65,21 @@ jobs:
         df -hT $PWD
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
-
+    
     - name: Cache Toolchain
       uses: actions/cache@main
       with:
-        path: openwrt
-        key: toolchain
-        
-    - name: Cache Tools
-      uses: actions/cache@main
-      with:
-        path: openwrt
+        path: |
+          /workdir/openwrt/toolchain
+          /workdir/openwrt/tools
+          /workdir/build_dir/toolchain*
+          /workdir/staging_dir/toolchain*
         key: tools
         
     - name: Cache CCache
       uses: actions/cache@main
       with:
-        path: openwrt
+        path: /workdir/openwrt/.ccache
         key: ccache
 
 #    - name: Load custom feeds
