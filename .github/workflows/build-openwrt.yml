@@ -38,12 +38,27 @@ env:
 jobs:
   build:
     runs-on: ubuntu-20.04
+    
 
     steps:
+    - name: Maximize build space
+      uses: easimon/maximize-build-space@master
+      with:
+        root-reserve-mb: 512
+        swap-size-mb: 1024
+        remove-dotnet: 'true'
+        remove-android: 'true'
+        remove-haskell: 'true'
+
+    - name: Build
+      run: |
+        echo "Free space:"
+        df -h
+    
     - name: Checkout
       uses: actions/checkout@main
-      #with:
-      #  fetch-depth: 0
+      with:
+        fetch-depth: 0
 
     - name: Initialization environment
       env:
@@ -65,13 +80,20 @@ jobs:
         df -hT $PWD
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
-        
-    - name: Cache Ccache Always
-      id: cache_ccache
-      uses: lzy0702/cache-always@main
+    
+    - name: cache
+      uses: klever1988/cachewrtbuild@test
       with:
-        path: /workdir/openwrt/.ccache
-        key: ccache
+          ccache: true #是否一并缓存.ccache目录，如果你启用了ccache。这是唯一的常用参数，其他三个用于除错，一般不需要调整
+          toolchain: true #是否缓存工具链目录
+          skip: true #是否跳过工具链编译
+          clean: false #清空缓存
+#    - name: Cache Ccache Always
+#      id: cache_ccache
+#      uses: lzy0702/cache-always@main
+#      with:
+#        path: /workdir/openwrt/.ccache
+#        key: ccache
 
 #    - name: Load custom feeds
 #      run: |
@@ -110,28 +132,28 @@ jobs:
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
   
-    - name: Cache Toolchain1
-      id: cache_toolchain
-      uses: actions/cache@main
-      with:
-        path: |
-          /workdir/openwrt/toolchain
-          /workdir/openwrt/tools
-          /workdir/openwrt/build_dir/toolchain*
-          /workdir/openwrt/build_dir/host*
-          /workdir/openwrt/staging_dir/toolchain*
-          /workdir/openwrt/staging_dir/host*
-        key: toolchain
+#    - name: Cache Toolchain1
+#      id: cache_toolchain
+#      uses: actions/cache@main
+#      with:
+#        path: |
+#          /workdir/openwrt/toolchain
+#          /workdir/openwrt/tools
+#          /workdir/openwrt/build_dir/toolchain*
+#          /workdir/openwrt/build_dir/host*
+#          /workdir/openwrt/staging_dir/toolchain*
+#          /workdir/openwrt/staging_dir/host*
+#        key: toolchain
         
-    - name: Touch toolchain files
-      id: touch_toolchain_files
-      if: ${{ steps.cache_toolchain.outputs.cache-hit == 'true' }}
-      run: |
-          cd openwrt
-          make defconfig
-          git log --pretty=tformat:"%h" -n1 tools toolchain
-          sed -i 's/ $(tool.*\/stamp-compile)//;' Makefile
-          sed -i 's/ $(tool.*\/stamp-install)//;' Makefile
+#    - name: Touch toolchain files
+#      id: touch_toolchain_files
+#      if: ${{ steps.cache_toolchain.outputs.cache-hit == 'true' }}
+#      run: |
+#          cd openwrt
+#          make defconfig
+#          git log --pretty=tformat:"%h" -n1 tools toolchain
+#          sed -i 's/ $(tool.*\/stamp-compile)//;' Makefile
+#          sed -i 's/ $(tool.*\/stamp-install)//;' Makefile
         
     - name: Compile toolchain
       id: compile1
