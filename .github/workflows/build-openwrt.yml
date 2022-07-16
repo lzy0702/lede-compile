@@ -65,24 +65,12 @@ jobs:
         df -hT $PWD
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
-    
-    - name: Cache Toolchain1
-      uses: actions/cache@main
-      with:
-        path: |
-          /workdir/openwrt/toolchain
-          /workdir/openwrt/tools
-          /workdir/openwrt/build_dir/toolchain*
-          /workdir/openwrt/staging_dir/toolchain*
-        key: toolchain
-        update: true
         
     - name: Cache Ccache Always
       uses: lzy0702/cache-always@main
       with:
         path: /workdir/openwrt/.ccache
         key: ccache
-        update: true
 
 #    - name: Load custom feeds
 #      run: |
@@ -116,6 +104,25 @@ jobs:
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
+  
+    - name: Cache Toolchain1
+      uses: actions/cache@main
+      with:
+        path: |
+          /workdir/openwrt/toolchain
+          /workdir/openwrt/tools
+          /workdir/openwrt/build_dir/toolchain*
+          /workdir/openwrt/build_dir/host*
+          /workdir/openwrt/staging_dir/toolchain*
+          /workdir/openwrt/staging_dir/host*
+        key: toolchain
+        
+    - name: Touch toolchain files
+      id: touch toolchain files
+      run: |
+        cd openwrt
+        find build_dir/{host*,toolchain-*} -name .built* -exec touch {} \;
+        touch staging_dir/{host*,toolchain-*}/stamp/.*
         
     - name: Compile toolchain
       id: compile1
