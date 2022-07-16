@@ -125,8 +125,8 @@ jobs:
         
     - name: Touch toolchain files
       id: touch_toolchain_files
-      run: |
       if: ${{ steps.cache_toolchain.outputs.cache-hit == 'true' }}
+      run: |
           cd openwrt
           find build_dir/{host*,toolchain-*} -name .built* -exec touch {} \;
           touch staging_dir/{host*,toolchain-*}/stamp/.*
