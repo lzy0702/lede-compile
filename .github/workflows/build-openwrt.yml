@@ -136,7 +136,6 @@ jobs:
       run: |
         cd openwrt
         make toolchain/install -j1 || make toolchain/install -j1 V=s
-        echo "::set-output name=status::success"
     
     - name: Prepare kernel files
       id: kernel_prepare
