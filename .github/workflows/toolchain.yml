@@ -23,7 +23,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout
@@ -121,7 +121,7 @@ jobs:
       id: compile1
       run: |
         cd openwrt
-        make toolchain/install -j1 || make toolchain/install -j1 V=s
+        make toolchain/install -j$(nproc) || make toolchain/install -j1 V=s
         
 
     
