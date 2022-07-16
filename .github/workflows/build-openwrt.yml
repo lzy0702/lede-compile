@@ -128,6 +128,8 @@ jobs:
       if: ${{ steps.cache_toolchain.outputs.cache-hit == 'true' }}
       run: |
           cd openwrt
+          make defconfig
+          git log --pretty=tformat:"%h" -n1 tools toolchain
           sed -i 's/ $(tool.*\/stamp-compile)//;' Makefile
           sed -i 's/ $(tool.*\/stamp-install)//;' Makefile
         
