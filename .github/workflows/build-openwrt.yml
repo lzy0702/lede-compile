@@ -128,8 +128,7 @@ jobs:
       if: ${{ steps.cache_toolchain.outputs.cache-hit == 'true' }}
       run: |
           cd openwrt
-          find build_dir/{host*,toolchain-*} -name .built* -exec touch {} \;
-          touch staging_dir/{host*,toolchain-*}/stamp/.*
+          bash -c 'find build_dir/{host*,toolchain-*} -name .built\* -exec touch {} \;; touch staging_dir/{host*,toolchain-*}/stamp/.*'
         
     - name: Compile toolchain
       id: compile1
