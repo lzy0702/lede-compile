@@ -59,13 +59,6 @@ jobs:
 #        path: /workdir/openwrt/.ccache
 #        key: ccache
 
-    - name: cache
-      uses: klever1988/cachewrtbuild@main
-      with:
-          ccache: true
-          toolchain: true
-          skip: true
-          clean: false
 #    - name: Load custom feeds
 #      run: |
 #        [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
@@ -93,7 +86,16 @@ jobs:
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
         make defconfig
-  
+        mkdir -p tools
+        mkdir -p toolchain
+ 
+    - name: cache
+      uses: klever1988/cachewrtbuild@main
+      with:
+          ccache: true
+          toolchain: true
+          skip: true
+          clean: false 
 #    - name: Cache Toolchain1
 #      id: cache_toolchain
 #      uses: actions/cache@main
