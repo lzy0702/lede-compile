@@ -67,6 +67,7 @@ jobs:
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
         
     - name: Cache Ccache Always
+      id: cache_ccache
       uses: lzy0702/cache-always@main
       with:
         path: /workdir/openwrt/.ccache
@@ -110,6 +111,7 @@ jobs:
         find dl -size -1024c -exec rm -f {} \;
   
     - name: Cache Toolchain1
+      id: cache_toolchain
       uses: actions/cache@main
       with:
         path: |
@@ -124,9 +126,10 @@ jobs:
     - name: Touch toolchain files
       id: touch_toolchain_files
       run: |
-        cd openwrt
-        find build_dir/{host*,toolchain-*} -name .built* -exec touch {} \;
-        touch staging_dir/{host*,toolchain-*}/stamp/.*
+        if (step.cache_toolchain.cache-hit=='true')
+          cd openwrt
+          find build_dir/{host*,toolchain-*} -name .built* -exec touch {} \;
+          touch staging_dir/{host*,toolchain-*}/stamp/.*
         
     - name: Compile toolchain
       id: compile1
