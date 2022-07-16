@@ -105,7 +105,8 @@ jobs:
       if: ${{ steps.cache_toolchain.outputs.cache-hit == 'true' }}
       run: |
           cd openwrt
-          bash -c 'find build_dir/{host*,toolchain-*} -name .built\* -exec touch {} \;; touch staging_dir/{host*,toolchain-*}/stamp/.*'
+          sed -i 's/ $(tool.*\/stamp-compile)//;' Makefile
+          sed -i 's/ $(tool.*\/stamp-install)//;' Makefile
         
     - name: Compile toolchain
       id: compile1
