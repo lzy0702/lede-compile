@@ -162,11 +162,11 @@ jobs:
 #          sed -i 's/ $(tool.*\/stamp-compile)//;' Makefile
 #          sed -i 's/ $(tool.*\/stamp-install)//;' Makefile
         
-    - name: Compile toolchain
-      id: compile1
-      run: |
-        cd openwrt
-        make toolchain/install -j1 || make toolchain/install -j1 V=s
+#    - name: Compile toolchain
+#      id: compile1
+#      run: |
+#        cd openwrt
+#        make toolchain/install -j1 || make toolchain/install -j1 V=s
     
     - name: Prepare kernel files
       id: kernel_prepare
