@@ -109,3 +109,10 @@ jobs:
         make toolchain/install -j$(nproc) || make toolchain/install -j1 || make toolchain/install -j1 V=s
         echo "::set-output name=status::success"
     
+    - name: Delete workflow runs
+      uses: GitRML/delete-workflow-runs@main
+      with:
+        retain_days: 1
+        keep_minimum_runs: 3
+
+    
