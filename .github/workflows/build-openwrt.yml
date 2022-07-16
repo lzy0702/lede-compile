@@ -84,6 +84,10 @@ jobs:
 
     - name: Install feeds
       run: cd openwrt && ./scripts/feeds install -a
+  
+    - name: Check space usage
+      if: (!cancelled())
+      run: df -hT 
 
     - name: Load custom configuration
       id: config1
@@ -150,7 +154,9 @@ jobs:
         [ -e $KERNEL_CONFIG_FILE2 ] && mv $KERNEL_CONFIG_FILE2 openwrt/target/linux/x86/config-5.15
         echo "config-5.15 moved to target"
         
-        
+    - name: Check space usage
+      if: (!cancelled())
+      run: df -hT   
 
     - name: SSH connection to Actions
       uses: P3TERX/ssh2actions@v1.0.0
