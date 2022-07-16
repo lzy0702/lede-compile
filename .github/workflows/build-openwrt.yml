@@ -80,9 +80,8 @@ jobs:
         df -hT $PWD
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
-        cd ${{ github.workspace }}/openwrt
-        mkdir -p tools
-        mkdir -p toolchain
+        mkdir -p ${{ github.workspace }}/openwrt/tools
+        mkdir -p ${{ github.workspace }}/openwrt/toolchain
     
     - name: cache
       uses: klever1988/cachewrtbuild@main
