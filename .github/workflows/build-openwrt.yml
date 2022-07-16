@@ -118,7 +118,7 @@ jobs:
         key: toolchain
         
     - name: Touch toolchain files
-      id: touch toolchain files
+      id: touch_toolchain_files
       run: |
         cd openwrt
         find build_dir/{host*,toolchain-*} -name .built* -exec touch {} \;
