@@ -117,9 +117,8 @@ jobs:
         uses: actions/upload-artifact@main
         with:
           name: misc
-          path: |
-            misc.tar.zst
-            retention-days: 1
+          path: misc.tar.zst
+          retention-days: 1
         
   job_2:
     name: Compile Openwrt Linux Kernel
@@ -171,9 +170,6 @@ jobs:
         uses: actions/download-artifact@main
         with:
           name: misc
-          path: |
-            misc.tar.zst
-            retention-days: 1
 
       - name: Release Miscellaneous files
         id: tar-x-misc1
@@ -197,7 +193,6 @@ jobs:
         uses: actions/download-artifact@main
         with:
           name: build_dir
-          path: directories.tar.zst
       
       - name: Release working directories
         id: tar-x-working_dir
@@ -301,9 +296,6 @@ jobs:
         uses: actions/download-artifact@main
         with:
           name: misc
-          path: |
-            misc.tar.zst
-            retention-days: 1
 
       - name: Release Miscellaneous files
         id: tar-x-misc1
@@ -325,9 +317,6 @@ jobs:
         uses: actions/download-artifact@main
         with:
           name: misc
-          path: |
-            misc.tar.zst
-            retention-days: 1
 
       - name: Release Miscellaneous files
         id: tar-x-misc2
@@ -342,7 +331,6 @@ jobs:
         uses: actions/download-artifact@main
         with:
           name: build_dir
-          path: directories.tar.zst
       
       - name: Release working directories
         id: tar-x-working_dir
@@ -378,9 +366,8 @@ jobs:
         uses: actions/upload-artifact@main
         with:
           name: misc
-          path: |
-            misc.tar.zst
-            retention-days: 1
+          path: misc.tar.zst
+          retention-days: 1
 
   job_4:
     name: Finish Openwrt Compile
@@ -432,9 +419,6 @@ jobs:
         uses: actions/download-artifact@main
         with:
           name: misc
-          path: |
-            misc.tar.zst
-            retention-days: 1
 
       - name: Release Miscellaneous files
         id: tar-x-misc1
@@ -456,9 +440,6 @@ jobs:
         uses: actions/download-artifact@main
         with:
           name: misc
-          path: |
-            misc.tar.zst
-            retention-days: 1
 
       - name: Release Miscellaneous files
         id: tar-x-misc2
@@ -473,7 +454,6 @@ jobs:
         uses: actions/download-artifact@main
         with:
           name: build_dir
-          path: directories.tar.zst
       
       - name: Release working directories
         id: tar-x-working_dir

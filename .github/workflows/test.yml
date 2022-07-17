@@ -63,6 +63,7 @@ jobs:
       - name: Download package pre-config
         id: package1
         run: |
+          touch openwrt/.config
           mkdir -p openwrt/build_dir 
           mkdir -p openwrt/staging_dir 
           mkdir -p openwrt/.ccache
@@ -134,7 +135,6 @@ jobs:
         uses: actions/download-artifact@main
         with:
           name: misc
-          path: misc.tar.zst
             
       - name: SSH connection to Actions
         uses: P3TERX/ssh2actions@v1.0.0
@@ -156,7 +156,6 @@ jobs:
         uses: actions/download-artifact@main
         with:
           name: build_dir
-          path: directories.tar.zst
 
       - name: Download package pre-config
         id: package1
