@@ -128,7 +128,7 @@ jobs:
   
     - name: Cache Toolchain
       id: cache_toolchain
-      uses: actions/cache@main
+      uses: lzy0702/cache-always@main
       with:
         path: |
           ${{ github.workspace }}/openwrt/toolchain
