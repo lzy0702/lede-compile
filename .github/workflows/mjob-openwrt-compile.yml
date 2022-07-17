@@ -343,11 +343,11 @@ jobs:
             ${{ github.workspace }}/openwrt/build_dir/target-x86_64_musl/linux-x86_64/linux-5.15*/.config
             ${{ github.workspace }}/openwrt/target/linux/x86/config-5.15
 
-   job_4:
-     name: Finish Openwrt Compile
-     needs: job_3
-     runs-on: ubuntu-latest
-     steps:
+  job_4:
+    name: Finish Openwrt Compile
+    needs: job_3
+    runs-on: ubuntu-latest
+    steps:
 
       - name: Initialization environment
         env:
