@@ -59,37 +59,15 @@ jobs:
           df -hT $PWD
           git clone $REPO_URL -b $REPO_BRANCH openwrt
           ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
-
-      - name: Load custom feeds
-        run: |
-          [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
-          cd openwrt
-
-      - name: Update feeds
-        run: cd openwrt && ./scripts/feeds update -a
-
-      - name: Install feeds
-        run: cd openwrt && ./scripts/feeds install -a
     
       - name: Check space usage
         if: (!cancelled())
         run: df -hT 
 
-      - name: Load custom configuration
-        id: config1
-        run: |
-          [ -e files ] && mv files openwrt/files
-          [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
-          echo ".config moved to openwrt/"
-          cd openwrt
         
       - name: Download package pre-config
         id: package1
         run: |
-          cd openwrt
-          make defconfig
-          make download -j8
-          cd ..
           mkdir -p openwrt/build_dir 
           mkdir -p openwrt/staging_dir 
           mkdir -p openwrt/.ccache
@@ -114,9 +92,8 @@ jobs:
         uses: actions/upload-artifact@main
         with:
           name: misc
-          path: |
-            misc.tar.zst
-            retention-days: 1
+          path: misc.tar.zst
+          retention-days: 1
   job_2:
     name: Compile Openwrt Linux Kernel
     needs: job_1
@@ -167,9 +144,7 @@ jobs:
         uses: actions/download-artifact@main
         with:
           name: misc
-          path: |
-            misc.tar.zst
-            retention-days: 1
+          path: misc.tar.zst
             
       - name: SSH connection to Actions
         uses: P3TERX/ssh2actions@v1.0.0
@@ -186,6 +161,12 @@ jobs:
           ls -a
           rm misc.tar.zst
           ls -a
+          
+      - name: Load Compiled Directories
+        uses: actions/download-artifact@main
+        with:
+          name: build_dir
+          path: directories.tar.zst
 
       - name: Download package pre-config
         id: package1
