@@ -86,7 +86,7 @@ jobs:
       id: cache_ccache
       uses: lzy0702/cache-always@main
       with:
-        path: /workdir/openwrt/.ccache
+        path: ${{ github.workspace }}/openwrt/.ccache
         key: ccache
 
     - name: Load custom feeds
@@ -126,17 +126,17 @@ jobs:
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
   
-    - name: Cache Toolchain1
+    - name: Cache Toolchain
       id: cache_toolchain
       uses: actions/cache@main
       with:
         path: |
-          /workdir/openwrt/toolchain
-          /workdir/openwrt/tools
-          /workdir/openwrt/build_dir/toolchain*
-          /workdir/openwrt/build_dir/host*
-          /workdir/openwrt/staging_dir/toolchain*
-          /workdir/openwrt/staging_dir/host*
+          ${{ github.workspace }}/openwrt/toolchain
+          ${{ github.workspace }}/openwrt/tools
+          ${{ github.workspace }}/openwrt/build_dir/toolchain*
+          ${{ github.workspace }}/openwrt/build_dir/host*
+          ${{ github.workspace }}/openwrt/staging_dir/toolchain*
+          ${{ github.workspace }}/openwrt/staging_dir/host*
         key: toolchain
         
     - name: Touch toolchain files
@@ -145,11 +145,27 @@ jobs:
       run: |
           cd openwrt
           make defconfig
-          git log --pretty=tformat:"%h" -n1 tools toolchain
-          sed -i 's/ $(tool.*\/stamp-compile)//;' Makefile
-          sed -i 's/ $(tool.*\/stamp-install)//;' Makefile
+          bash -c 'find build_dir/{host*,toolchain-*} -name .built* -exec touch {} \;; touch staging_dir/{host*,toolchain-*}/stamp/.*'
           df -h
         
+    - name: Cache Packages Always
+      id: cache_packages
+      uses: lzy0702/cache-always@main
+      with:
+        path: |
+          ${{ github.workspace }}/openwrt/build_dir/target*
+          ${{ github.workspace }}/openwrt/staging_dir/target*
+          ${{ github.workspace }}/openwrt/staging_dir/packages
+        key: packages
+        
+    - name: Touch Package Files
+      id: touch_packages_files
+      if: ${{ steps.cache_toolchain.outputs.cache-hit == 'true' }}
+      run: |
+          cd openwrt
+          make defconfig
+          bash -c 'find build_dir/{target*} -name .built* -exec touch {} \;; touch staging_dir/{target*,packages}/stamp/.*'
+          df -h
     - name: Compile toolchain
       id: compile1
       run: |
