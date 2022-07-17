@@ -25,7 +25,7 @@ env:
   UPLOAD_RELEASE: true
   TZ: America/New_York
 
-jobs:
+jobs: |
 
   job1:
     name: Compile Openwrt Toolchain
