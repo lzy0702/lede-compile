@@ -111,6 +111,7 @@ jobs:
         with:
           name: build_dir
           path: directories.tar.zst
+          retention-days: 1
 
       - name: Upload Miscellaneous files
         uses: actions/upload-artifact@main
@@ -118,6 +119,7 @@ jobs:
           name: misc
           path: |
             ${{ github.workspace }}/openwrt/.config
+            retention-days: 1
         
   job_2:
     name: Compile Openwrt Linux Kernel
@@ -222,6 +224,7 @@ jobs:
         with:
           name: build_dir
           path: directories.tar.zst
+          retention-days: 1
 
       - name: Upload Miscellaneous files
         uses: actions/upload-artifact@main
@@ -231,6 +234,7 @@ jobs:
             ${{ github.workspace }}/openwrt/.config
             ${{ github.workspace }}/openwrt/build_dir/target-x86_64_musl/linux-x86_64/linux-5.15*/.config
             ${{ github.workspace }}/openwrt/target/linux/x86/config-5.15
+          retention-days: 1
 
   job_3:
     name: Compile Openwrt Packages
@@ -328,6 +332,7 @@ jobs:
         with:
           name: build_dir
           path: directories.tar.zst
+          retention-days: 1
 
       - name: Upload Miscellaneous files
         uses: actions/upload-artifact@main
@@ -337,6 +342,7 @@ jobs:
             ${{ github.workspace }}/openwrt/.config
             ${{ github.workspace }}/openwrt/build_dir/target-x86_64_musl/linux-x86_64/linux-5.15*/.config
             ${{ github.workspace }}/openwrt/target/linux/x86/config-5.15
+          retention-days: 1
 
   job_4:
     name: Finish Openwrt Compile
