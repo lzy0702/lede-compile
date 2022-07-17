@@ -53,29 +53,21 @@ jobs:
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
         mkdir -p ${{ github.workspace }}/openwrt/tools
         mkdir -p ${{ github.workspace }}/openwrt/toolchain
-    
-    - name: cache
-      uses: klever1988/cachewrtbuild@main
-      with:
-          ccache: true
-          toolchain: true
-          skip: true
-          clean: false
-          prefix: ${{ github.workspace }}/openwrt
-        
-#    - name: Cache Ccache Always
-#      id: cache_ccahe
-#      uses: lzy0702/cache-always@main
-#      with:
-#        path: /workdir/openwrt/.ccache
-#        key: ccache
 
-#    - name: Load custom feeds
-#      run: |
-#        [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
-#        chmod +x $DIY_P1_SH
-#        cd openwrt
-#        $GITHUB_WORKSPACE/$DIY_P1_SH
+        
+    - name: Cache Ccache Always
+      id: cache_ccahe
+      uses: lzy0702/cache-always@main
+      with:
+        path: ${{ github.workspace }}/openwrt/.ccache
+        key: ccache
+
+    - name: Load custom feeds
+      run: |
+        [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
+        chmod +x $DIY_P1_SH
+        cd openwrt
+        $GITHUB_WORKSPACE/$DIY_P1_SH
 
     - name: Update feeds
       run: |
@@ -100,28 +92,27 @@ jobs:
         mkdir -p tools
         mkdir -p toolchain
  
-#    - name: Cache Toolchain1
-#      id: cache_toolchain
-#      uses: actions/cache@main
-#      with:
-#        path: |
-#          /workdir/openwrt/toolchain
-#          /workdir/openwrt/tools
-#          /workdir/openwrt/build_dir/toolchain*
-#          /workdir/openwrt/build_dir/host*
-#          /workdir/openwrt/staging_dir/toolchain*
-#          /workdir/openwrt/staging_dir/host*
-#        key: toolchain
+    - name: Cache Toolchain
+      id: cache_toolchain
+      uses: lzy0702/cache-always@main
+      with:
+        path: |
+          ${{ github.workspace }}/openwrt/toolchain
+          ${{ github.workspace }}/openwrt/tools
+          ${{ github.workspace }}/openwrt/build_dir/toolchain*
+          ${{ github.workspace }}/openwrt/build_dir/host*
+          ${{ github.workspace }}/openwrt/staging_dir/toolchain*
+          ${{ github.workspace }}/openwrt/staging_dir/host*
+        key: toolchain
         
-#    - name: Touch toolchain files
-#      id: touch_toolchain_files
-#      if: ${{ steps.cache_toolchain.outputs.cache-hit == 'true' }}
-#      run: |
-#          cd openwrt
-#          make defconfig
-#          git log --pretty=tformat:"%h" -n1 tools toolchain
-#          sed -i 's/ $(tool.*\/stamp-compile)//;' Makefile
-#          sed -i 's/ $(tool.*\/stamp-install)//;' Makefile
+    - name: Touch toolchain files
+      id: touch_toolchain_files
+      if: ${{ steps.cache_toolchain.outputs.cache-hit == 'true' }}
+      run: |
+          cd openwrt
+          make defconfig
+          bash -c 'find build_dir/{host*,toolchain-*} -name .built* -exec touch {} \;; touch staging_dir/{host*,toolchain-*}/stamp/.*'
+          df -h
         
     - name: Compile toolchain
       id: compile1
