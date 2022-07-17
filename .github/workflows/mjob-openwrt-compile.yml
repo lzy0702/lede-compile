@@ -174,20 +174,15 @@ jobs:
       - name: Release Miscellaneous files
         id: tar-x-misc1
         run: |
-          ls -a 
           tar -xf misc.tar.zst
-          ls -a
           rm misc.tar.zst
-          ls -a
 
       - name: Download package pre-config
         id: package1
         run: |
-          ls -a
           cd openwrt
           make defconfig
           make download -j8
-          ls -a
       
       - name: Load Compiled Directories
         uses: actions/download-artifact@main
@@ -197,10 +192,8 @@ jobs:
       - name: Release working directories
         id: tar-x-working_dir
         run: |
-          ls -a
           tar -xf directories.tar.zst
           rm directories.tar.zst
-          ls -a
 
       - name: Load custom kernel configuration
         id: config2
@@ -242,9 +235,8 @@ jobs:
         uses: actions/upload-artifact@main
         with:
           name: misc
-          path: |
-            misc.tar.zst
-            retention-days: 1
+          path: misc.tar.zst
+          retention-days: 1
 
   job_3:
     name: Compile Openwrt Packages
@@ -300,11 +292,8 @@ jobs:
       - name: Release Miscellaneous files
         id: tar-x-misc1
         run: |
-          ls -a 
           tar -xf misc.tar.zst
-          ls -a
           rm misc.tar.zst
-          ls -a
 
       - name: Download package pre-config
         id: package1
@@ -321,11 +310,8 @@ jobs:
       - name: Release Miscellaneous files
         id: tar-x-misc2
         run: |
-          ls -a 
           tar -xf misc.tar.zst
-          ls -a
           rm misc.tar.zst
-          ls -a
 
       - name: Load Compiled Directories
         uses: actions/download-artifact@main
@@ -423,11 +409,8 @@ jobs:
       - name: Release Miscellaneous files
         id: tar-x-misc1
         run: |
-          ls -a 
           tar -xf misc.tar.zst
-          ls -a
           rm misc.tar.zst
-          ls -a
 
       - name: Download package pre-config
         id: package1
@@ -444,11 +427,8 @@ jobs:
       - name: Release Miscellaneous files
         id: tar-x-misc2
         run: |
-          ls -a 
           tar -xf misc.tar.zst
-          ls -a
           rm misc.tar.zst
-          ls -a
 
       - name: Load Compiled Directories
         uses: actions/download-artifact@main
