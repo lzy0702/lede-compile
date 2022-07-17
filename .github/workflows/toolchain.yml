@@ -111,7 +111,7 @@ jobs:
       run: |
           cd openwrt
           make defconfig
-          bash -c 'find build_dir/{host*,toolchain-*} -name .built* -exec touch {} \;; touch staging_dir/{host*,toolchain-*}/stamp/.*'
+          bash -c 'find build_dir/{host*,toolchain-*} -name .built* -exec touch {} \;; touch staging_dir/{host*,toolchain-*}/stamp/.*' || touch COPYING
           df -h
         
     - name: Compile toolchain
