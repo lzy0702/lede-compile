@@ -89,6 +89,11 @@ jobs:
           cd openwrt
           make defconfig
           make download -j8
+          cd ..
+          mkdir -p openwrt/build_dir 
+          mkdir -p openwrt/staging_dir 
+          mkdir -p openwrt/.ccache
+          
 
       - name: Tar working directories
         id: tar-c-working_dir
