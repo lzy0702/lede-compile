@@ -188,12 +188,25 @@ jobs:
         uses: actions/download-artifact@main
         with:
           name: build_dir
+      - name: clean working dir artifacts
+        id: clean-working_dir-artifact
+        run: |
+          mv directories.tar.zst directories1.tar.zst
+          touch directories.tar.zst
+
+      - name: Upload Compiled Directories
+        uses: actions/upload-artifact@main
+        with:
+          name: build_dir
+          path: directories.tar.zst
+          retention-days: 1
       
       - name: Release working directories
         id: tar-x-working_dir
         run: |
-          tar -xf directories.tar.zst
-          rm directories.tar.zst
+          tar -xf directories1.tar.zst
+          rm directories1.tar.zst
+          cd openwrt
           make target/linux/prepare
 
       - name: Load custom kernel configuration
