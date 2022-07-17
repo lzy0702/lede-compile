@@ -88,10 +88,7 @@ jobs:
         run: |
           cd openwrt
           make defconfig
-          find staging_dir/ -type f -name ".prepared" -exec rm -f {} \;
           make download -j8
-          find dl -size -1024c -exec ls -l {} \;
-          find dl -size -1024c -exec rm -f {} \;  
         
       - name: Compile toolchain
         id: compile1
@@ -193,10 +190,7 @@ jobs:
           ls -a
           cd openwrt
           make defconfig
-          find staging_dir/ -type f -name ".prepared" -exec rm -f {} \;
           make download -j8
-          find dl -size -1024c -exec ls -l {} \;
-          find dl -size -1024c -exec rm -f {} \;
           ls -a
       
       - name: Load Compiled Directories
@@ -325,10 +319,7 @@ jobs:
         run: |
           cd openwrt
           make defconfig
-          find staging_dir/ -type f -name ".prepared" -exec rm -f {} \;
           make download -j8
-          find dl -size -1024c -exec ls -l {} \;
-          find dl -size -1024c -exec rm -f {} \;
       
       - name: Load Miscellaneous files
         uses: actions/download-artifact@main
@@ -459,10 +450,7 @@ jobs:
         run: |
           cd openwrt
           make defconfig
-          find staging_dir/ -type f -name ".prepared" -exec rm -f {} \;
           make download -j8
-          find dl -size -1024c -exec ls -l {} \;
-          find dl -size -1024c -exec rm -f {} \;
       
       - name: Load Miscellaneous files
         uses: actions/download-artifact@main
