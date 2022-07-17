@@ -155,7 +155,7 @@ jobs:
         path: |
           ${{ github.workspace }}/openwrt/build_dir/target*
           ${{ github.workspace }}/openwrt/staging_dir/target*
-          ${{ github.workspace }}/openwrt/staging_dir/packages
+          ${{ github.workspace }}/openwrt/staging_dir/package
         key: packages
         
     - name: Touch Package Files
