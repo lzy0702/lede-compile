@@ -25,9 +25,8 @@ env:
   UPLOAD_RELEASE: true
   TZ: America/New_York
 
-jobs: |
-
-  job1:
+jobs:
+  job_1:
     name: Compile Openwrt Toolchain
     runs-on: ubuntu-latest
     steps:
@@ -120,9 +119,9 @@ jobs: |
           path: |
             ${{ github.workspace }}/openwrt/.config
         
-  job2:
+  job_2:
     name: Compile Openwrt Linux Kernel
-    needs: job1
+    needs: job_1
     runs-on: ubuntu-latest
     steps:
 
@@ -238,10 +237,9 @@ jobs: |
             ${{ github.workspace }}/openwrt/build_dir/target-x86_64_musl/linux-x86_64/linux-5.15*/.config
             ${{ github.workspace }}/openwrt/target/linux/x86/config-5.15
 
-  job3:
-  
+  job_3:
     name: Compile Openwrt Packages
-    needs: job2
+    needs: job_2
     runs-on: ubuntu-latest
     steps:
 
@@ -345,11 +343,11 @@ jobs: |
             ${{ github.workspace }}/openwrt/build_dir/target-x86_64_musl/linux-x86_64/linux-5.15*/.config
             ${{ github.workspace }}/openwrt/target/linux/x86/config-5.15
 
-   job4:
-    name: Finish Openwrt Compile
-    needs: job3
-    runs-on: ubuntu-latest
-    steps:
+   job_4:
+     name: Finish Openwrt Compile
+     needs: job_3
+     runs-on: ubuntu-latest
+     steps:
 
       - name: Initialization environment
         env:
