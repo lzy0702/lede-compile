@@ -103,7 +103,7 @@ jobs:
           df -h
       
       - name: Tar working directories
-        id: tar-build_dir
+        id: tar-c-working_dir
         run: tar "-I zstd -9 -T0" -cf directories.tar.zst openwrt/build_dir openwrt/staging_dir openwrt/.ccache
 
       - name: Upload Compiled Directories
@@ -153,11 +153,6 @@ jobs:
           df -hT $PWD
           git clone $REPO_URL -b $REPO_BRANCH openwrt
           ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
-          
-        uses: actions/download-artifact@v3
-        with:
-          name: ccache
-          path: ${{ github.workspace }}/openwrt/.ccache
 
       - name: Load custom feeds
         run: |
@@ -194,7 +189,7 @@ jobs:
           path: directories.tar.zst
       
       - name: Release working directories
-        id: tar-build_dir
+        id: tar-x-working_dir
         run: |
           tar -xf directories.tar.zst
           rm directories.tar.zst
@@ -219,7 +214,7 @@ jobs:
           make target/linux/compile -j$(nproc) || make target/linux/compile -j1 || make target/linux/compile -j1 V=s
       
       - name: Tar working directories
-        id: tar-build_dir
+        id: tar-c-working_dir
         run: tar "-I zstd -9 -T0" -cf directories.tar.zst openwrt/build_dir openwrt/staging_dir openwrt/.ccache
 
       - name: Upload Compiled Directories
@@ -312,7 +307,7 @@ jobs:
           path: directories.tar.zst
       
       - name: Release working directories
-        id: tar-build_dir
+        id: tar-x-working_dir
         run: |
           tar -xf directories.tar.zst
           rm directories.tar.zst
@@ -325,7 +320,7 @@ jobs:
           make package/compile -j$(nproc) || make package/compile -j1 || make package/compile -j1 V=s
       
       - name: Tar working directories
-        id: tar-build_dir
+        id: tar-c-working_dir
         run: tar "-I zstd -9 -T0" -cf directories.tar.zst openwrt/build_dir openwrt/staging_dir openwrt/.ccache
 
       - name: Upload Compiled Directories
@@ -418,7 +413,7 @@ jobs:
           path: directories.tar.zst
       
       - name: Release working directories
-        id: tar-build_dir
+        id: tar-x-working_dir
         run: |
           tar -xf directories.tar.zst
           rm directories.tar.zst
