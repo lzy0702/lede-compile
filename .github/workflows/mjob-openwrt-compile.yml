@@ -1,4 +1,4 @@
-name: OpenWrt with Cache
+name: Compile Openwrt in jobs
 
 on:
   repository_dispatch:
