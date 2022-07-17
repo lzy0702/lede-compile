@@ -112,12 +112,16 @@ jobs:
           path: directories.tar.zst
           retention-days: 1
 
+      - name: Tar Miscellaneous files
+        id: tar-c-misc
+        run: tar "-I zstd -9 -T0" -cf misc.tar.zst openwrt/.config
+
       - name: Upload Miscellaneous files
         uses: actions/upload-artifact@main
         with:
           name: misc
           path: |
-            ${{ github.workspace }}/openwrt/.config
+            misc.tar.zst
             retention-days: 1
         
   job_2:
@@ -170,6 +174,18 @@ jobs:
         uses: actions/download-artifact@main
         with:
           name: misc
+          path: |
+            misc.tar.zst
+            retention-days: 1
+
+      - name: Release Miscellaneous files
+        id: tar-x-misc1
+        run: |
+          ls -a 
+          tar -xf misc.tar.zst
+          ls -a
+          rm misc.tar.zst
+          ls -a
 
       - name: Download package pre-config
         id: package1
@@ -227,15 +243,19 @@ jobs:
           path: directories.tar.zst
           retention-days: 1
 
+      - name: Tar Miscellaneous files
+        id: tar-c-misc
+        run: tar "-I zstd -9 -T0" -cf misc.tar.zst openwrt/.config \
+          openwrt/build_dir/target-x86_64_musl/linux-x86_64/linux-5.15*/.config \
+          openwrt/target/linux/x86/config-5.15
+
       - name: Upload Miscellaneous files
         uses: actions/upload-artifact@main
         with:
           name: misc
           path: |
-            ${{ github.workspace }}/openwrt/.config
-            ${{ github.workspace }}/openwrt/build_dir/target-x86_64_musl/linux-x86_64/linux-5.15*/.config
-            ${{ github.workspace }}/openwrt/target/linux/x86/config-5.15
-          retention-days: 1
+            misc.tar.zst
+            retention-days: 1
 
   job_3:
     name: Compile Openwrt Packages
@@ -287,6 +307,18 @@ jobs:
         uses: actions/download-artifact@main
         with:
           name: misc
+          path: |
+            misc.tar.zst
+            retention-days: 1
+
+      - name: Release Miscellaneous files
+        id: tar-x-misc1
+        run: |
+          ls -a 
+          tar -xf misc.tar.zst
+          ls -a
+          rm misc.tar.zst
+          ls -a
 
       - name: Download package pre-config
         id: package1
@@ -302,6 +334,18 @@ jobs:
         uses: actions/download-artifact@main
         with:
           name: misc
+          path: |
+            misc.tar.zst
+            retention-days: 1
+
+      - name: Release Miscellaneous files
+        id: tar-x-misc2
+        run: |
+          ls -a 
+          tar -xf misc.tar.zst
+          ls -a
+          rm misc.tar.zst
+          ls -a
 
       - name: Load Compiled Directories
         uses: actions/download-artifact@main
@@ -333,15 +377,19 @@ jobs:
           path: directories.tar.zst
           retention-days: 1
 
+      - name: Tar Miscellaneous files
+        id: tar-c-misc
+        run: tar "-I zstd -9 -T0" -cf misc.tar.zst openwrt/.config \
+          openwrt/build_dir/target-x86_64_musl/linux-x86_64/linux-5.15*/.config \
+          openwrt/target/linux/x86/config-5.15
+
       - name: Upload Miscellaneous files
         uses: actions/upload-artifact@main
         with:
           name: misc
           path: |
-            ${{ github.workspace }}/openwrt/.config
-            ${{ github.workspace }}/openwrt/build_dir/target-x86_64_musl/linux-x86_64/linux-5.15*/.config
-            ${{ github.workspace }}/openwrt/target/linux/x86/config-5.15
-          retention-days: 1
+            misc.tar.zst
+            retention-days: 1
 
   job_4:
     name: Finish Openwrt Compile
@@ -393,6 +441,18 @@ jobs:
         uses: actions/download-artifact@main
         with:
           name: misc
+          path: |
+            misc.tar.zst
+            retention-days: 1
+
+      - name: Release Miscellaneous files
+        id: tar-x-misc1
+        run: |
+          ls -a 
+          tar -xf misc.tar.zst
+          ls -a
+          rm misc.tar.zst
+          ls -a
 
       - name: Download package pre-config
         id: package1
@@ -408,6 +468,18 @@ jobs:
         uses: actions/download-artifact@main
         with:
           name: misc
+          path: |
+            misc.tar.zst
+            retention-days: 1
+
+      - name: Release Miscellaneous files
+        id: tar-x-misc2
+        run: |
+          ls -a 
+          tar -xf misc.tar.zst
+          ls -a
+          rm misc.tar.zst
+          ls -a
 
       - name: Load Compiled Directories
         uses: actions/download-artifact@main
