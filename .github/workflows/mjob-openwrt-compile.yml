@@ -194,6 +194,7 @@ jobs:
         run: |
           tar -xf directories.tar.zst
           rm directories.tar.zst
+          make target/linux/prepare
 
       - name: Load custom kernel configuration
         id: config2
@@ -307,12 +308,6 @@ jobs:
         with:
           name: misc
 
-      - name: Release Miscellaneous files
-        id: tar-x-misc2
-        run: |
-          tar -xf misc.tar.zst
-          rm misc.tar.zst
-
       - name: Load Compiled Directories
         uses: actions/download-artifact@main
         with:
@@ -323,6 +318,13 @@ jobs:
         run: |
           tar -xf directories.tar.zst
           rm directories.tar.zst
+          make target/linux/prepare
+
+      - name: Release Miscellaneous files
+        id: tar-x-misc2
+        run: |
+          tar -xf misc.tar.zst
+          rm misc.tar.zst      
       
       - name: Compile Packages
         id: compile2
@@ -424,12 +426,6 @@ jobs:
         with:
           name: misc
 
-      - name: Release Miscellaneous files
-        id: tar-x-misc2
-        run: |
-          tar -xf misc.tar.zst
-          rm misc.tar.zst
-
       - name: Load Compiled Directories
         uses: actions/download-artifact@main
         with:
@@ -440,7 +436,14 @@ jobs:
         run: |
           tar -xf directories.tar.zst
           rm directories.tar.zst
-      
+          make target/linux/prepare
+
+      - name: Release Miscellaneous files
+        id: tar-x-misc2
+        run: |
+          tar -xf misc.tar.zst
+          rm misc.tar.zst      
+
       - name: Finish compile
         id: compile4
         run: |
