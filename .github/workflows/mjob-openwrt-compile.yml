@@ -355,7 +355,7 @@ jobs:
       - name: Remove not working patch
         id: remove-patch
         run: |
-          rm openwrt/package/lean/r8125/patches/020-5.18-support.patch
+          rm openwrt/package/lean/r8125/patches/020*.patch
           
       - name: Compile Packages
         id: compile2
@@ -490,7 +490,7 @@ jobs:
       - name: Remove not working patch
         id: remove-patch
         run: |
-          rm openwrt/package/lean/r8125/patches/020-5.18-support.patch
+          rm openwrt/package/lean/r8125/patches/020*.patch
           
       - name: Finish compile
         id: compile4
