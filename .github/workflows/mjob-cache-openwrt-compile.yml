@@ -94,7 +94,7 @@ jobs:
             openwrt/.ccache
             openwrt/build_dir
             openwrt/staging_dir
-          key: working_dir1
+          key: working_dir.${{github.run_number}}.1
         
       - name: Compile toolchain
         id: compile1
@@ -186,8 +186,8 @@ jobs:
             openwrt/.ccache
             openwrt/build_dir
             openwrt/staging_dir
-          key: working_dir2
-          restore-keys: working_dir1
+          key: working_dir.${{github.run_number}}.2
+          restore-keys: working_dir.${{github.run_number}}.1
       
       - name: Prepare working directories
         id: prepare-working_dir
@@ -303,8 +303,8 @@ jobs:
             openwrt/.ccache
             openwrt/build_dir
             openwrt/staging_dir
-          key: working_dir3
-          restore-keys: working_dir2
+          key: working_dir.${{github.run_number}}.3
+          restore-keys: working_dir.${{github.run_number}}.2
 
       - name: Prepare working directories
         id: prepare-working_dir
@@ -417,8 +417,8 @@ jobs:
             openwrt/.ccache
             openwrt/build_dir
             openwrt/staging_dir
-          key: working_dir4
-          restore-keys: working_dir3
+          key: working_dir.${{github.run_number}}.4
+          restore-keys: working_dir.${{github.run_number}}.3
 
       - name: Prepare working directories
         id: prepare-working_dir
