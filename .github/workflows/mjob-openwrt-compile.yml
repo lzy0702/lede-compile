@@ -361,6 +361,7 @@ jobs:
         id: compile2
         run: |
           cd openwrt
+          make defconfig
           make download -j8
           echo -e "$(nproc) thread compile"
           make package/compile -j$(nproc) || make package/compile -j1 || make package/compile -j1 V=s
