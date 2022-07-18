@@ -100,7 +100,7 @@ jobs:
             openwrt/build_dir
             openwrt/staging_dir
           key: working_dir1
-          restore-key: working_dir*
+          restore-keys: working_dir*
         
       - name: Compile toolchain
         id: compile1
@@ -193,7 +193,7 @@ jobs:
             openwrt/build_dir
             openwrt/staging_dir
           key: working_dir2
-          restore-key: working_dir1
+          restore-keys: working_dir1
       
       - name: Prepare working directories
         id: prepare-working_dir
@@ -309,7 +309,7 @@ jobs:
             openwrt/build_dir
             openwrt/staging_dir
           key: working_dir3
-          restore-key: working_dir2
+          restore-keys: working_dir2
 
       - name: Prepare working directories
         id: prepare-working_dir
@@ -423,7 +423,7 @@ jobs:
             openwrt/build_dir
             openwrt/staging_dir
           key: working_dir4
-          restore-key: working_dir3
+          restore-keys: working_dir3
 
       - name: Prepare working directories
         id: prepare-working_dir
