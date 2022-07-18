@@ -228,6 +228,7 @@ jobs:
           cd openwrt
           echo -e "$(nproc) thread compile"
           make target/linux/compile -j$(nproc) || make target/linux/compile -j1 || make target/linux/compile -j1 V=s
+          make target/compile -j$(nproc) || make target/compile -j1 || make target/compile -j1 V=s
       
       - name: Tar working directories
         id: tar-c-working_dir
