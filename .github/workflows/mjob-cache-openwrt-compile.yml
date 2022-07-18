@@ -217,17 +217,6 @@ jobs:
           cd openwrt
           echo -e "$(nproc) thread compile"
           make target/linux/compile -j$(nproc) || make target/linux/compile -j1 || make target/linux/compile -j1 V=s
-      
-      - name: Tar working directories
-        id: tar-c-working_dir
-        run: tar "-I zstd -9 -T0" -cf directories.tar.zst openwrt/build_dir openwrt/staging_dir openwrt/.ccache
-
-      - name: Upload Compiled Directories
-        uses: actions/upload-artifact@main
-        with:
-          name: build_dir
-          path: directories.tar.zst
-          retention-days: 1
 
       - name: Tar Miscellaneous files
         id: tar-c-misc
@@ -342,17 +331,6 @@ jobs:
           cd openwrt
           echo -e "$(nproc) thread compile"
           make package/compile -j$(nproc) || make package/compile -j1 || make package/compile -j1 V=s
-      
-      - name: Tar working directories
-        id: tar-c-working_dir
-        run: tar "-I zstd -9 -T0" -cf directories.tar.zst openwrt/build_dir openwrt/staging_dir openwrt/.ccache
-
-      - name: Upload Compiled Directories
-        uses: actions/upload-artifact@main
-        with:
-          name: build_dir
-          path: directories.tar.zst
-          retention-days: 1
 
       - name: Tar Miscellaneous files
         id: tar-c-misc
