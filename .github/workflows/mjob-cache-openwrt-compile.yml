@@ -100,7 +100,6 @@ jobs:
             openwrt/build_dir
             openwrt/staging_dir
           key: working_dir1
-          restore-keys: working_dir*
         
       - name: Compile toolchain
         id: compile1
