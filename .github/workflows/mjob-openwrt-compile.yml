@@ -242,9 +242,7 @@ jobs:
 
       - name: Tar Miscellaneous files
         id: tar-c-misc
-        run: tar "-I zstd -9 -T0" -cf misc.tar.zst openwrt/.config \
-          openwrt/build_dir/target-x86_64_musl/linux-x86_64/linux-5.15*/.config \
-          openwrt/target/linux/x86/config-5.15
+        run: tar "-I zstd -9 -T0" -cf misc.tar.zst openwrt/.config openwrt/build_dir/target-x86_64_musl/linux-x86_64/linux-5.15*/.config openwrt/target/linux/x86/config-5.15
 
       - name: Upload Miscellaneous files
         uses: actions/upload-artifact@main
@@ -374,9 +372,7 @@ jobs:
 
       - name: Tar Miscellaneous files
         id: tar-c-misc
-        run: tar "-I zstd -9 -T0" -cf misc.tar.zst openwrt/.config \
-          openwrt/build_dir/target-x86_64_musl/linux-x86_64/linux-5.15*/.config \
-          openwrt/target/linux/x86/config-5.15
+        run: tar "-I zstd -9 -T0" -cf misc.tar.zst openwrt/.config openwrt/build_dir/target-x86_64_musl/linux-x86_64/linux-5.15*/.config openwrt/target/linux/x86/config-5.15
 
       - name: Upload Miscellaneous files
         uses: actions/upload-artifact@main
