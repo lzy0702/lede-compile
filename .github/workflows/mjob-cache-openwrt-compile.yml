@@ -1,0 +1,526 @@
+name: Compile Openwrt in jobs
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      ssh:
+        description: 'SSH connection to Actions'
+        required: false
+        default: 'false'
+
+env:
+  REPO_URL: https://github.com/coolsnowwolf/lede
+  REPO_BRANCH: master
+  FEEDS_CONF: feeds.conf.default
+  CONFIG_FILE: lede2.config
+  KERNEL_CONFIG_FILE: kernel2.config
+  KERNEL_CONFIG_FILE2: config5.15
+  DIY_P1_SH: diy-part1.sh
+  DIY_P2_SH: diy-part2.sh
+  UPLOAD_BIN_DIR: true
+  UPLOAD_FIRMWARE: true
+  UPLOAD_COWTRANSFER: false
+  UPLOAD_WETRANSFER: false
+  UPLOAD_RELEASE: true
+  TZ: America/New_York
+
+jobs:
+  job_1:
+    name: Compile Openwrt Toolchain
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Initialization environment
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          #sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+          sudo -E apt purge *dotnet* *android* azure*
+          sudo -E apt purge google-cloud-sdk microsoft-edge-stable google-chrome-stable firefox powershell hhvm
+          sudo -E apt purge llvm*dev libllvm* temurin*jdk clang-tools* libclang* *mysql* llvm* clang*
+          sudo -E rm -rf /usr/share/dotnet
+          sudo -E rm -rf /usr/local/lib/android
+          sudo -E rm -rf /opt/ghc
+          sudo -E apt-get -qq update
+          sudo -E apt-get -qq upgrade
+          sudo -E apt-get -qq install ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libreadline-dev libssl-dev libtool lrzsz mkisofs msmtp nano ninja-build p7zip p7zip-full patch pkgconf python2.7 python3 python3-pip libpython3-dev qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
+          sudo -E apt-get -qq autoremove --purge
+          sudo -E apt-get -qq clean
+          sudo -E apt autoremove
+          sudo timedatectl set-timezone "$TZ"
+          sudo mkdir -p /workdir
+          sudo chown $USER:$GROUPS /workdir
+          df -h
+
+      - name: Clone source code
+        working-directory: /workdir
+        run: |
+          df -hT $PWD
+          git clone $REPO_URL -b $REPO_BRANCH openwrt
+          ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+
+      - name: Load custom feeds
+        run: |
+          [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
+          cd openwrt
+
+      - name: Update feeds
+        run: cd openwrt && ./scripts/feeds update -a
+
+      - name: Install feeds
+        run: cd openwrt && ./scripts/feeds install -a
+    
+      - name: Check space usage
+        if: (!cancelled())
+        run: df -hT 
+
+      - name: Load custom configuration
+        id: config1
+        run: |
+          [ -e files ] && mv files openwrt/files
+          [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
+          echo ".config moved to openwrt/"
+          cd openwrt
+        
+      - name: Download package pre-config
+        id: package1
+        run: |
+          cd openwrt
+          make defconfig
+          make download -j8
+          mkdir -p .ccache build_dir staging_dir
+     
+      - name: Cache working directories
+        id: cache-build_dir
+        uses: lzy0702/cache-always@main
+        with:
+          path: |
+            openwrt/.ccache
+            openwrt/build_dir
+            openwrt/staging_dir
+          key: working_dir
+        
+      - name: Compile toolchain
+        id: compile1
+        run: |
+          cd openwrt
+          make toolchain/install -j$(nproc) || make toolchain/install -j1 || make toolchain/install -j1 V=s
+          df -h
+
+      - name: Tar Miscellaneous files
+        id: tar-c-misc
+        run: tar "-I zstd -9 -T0" -cf misc.tar.zst openwrt/.config
+
+      - name: Upload Miscellaneous files
+        uses: actions/upload-artifact@main
+        with:
+          name: misc
+          path: misc.tar.zst
+          retention-days: 1
+        
+  job_2:
+    name: Compile Openwrt Linux Kernel
+    needs: job_1
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Initialization environment
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          #sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+          sudo -E apt purge *dotnet* *android* azure*
+          sudo -E apt purge google-cloud-sdk microsoft-edge-stable google-chrome-stable firefox powershell hhvm
+          sudo -E apt purge llvm*dev libllvm* temurin*jdk clang-tools* libclang* *mysql* llvm* clang*
+          sudo -E rm -rf /usr/share/dotnet
+          sudo -E rm -rf /usr/local/lib/android
+          sudo -E rm -rf /opt/ghc
+          sudo -E apt-get -qq update
+          sudo -E apt-get -qq upgrade
+          sudo -E apt-get -qq install ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libreadline-dev libssl-dev libtool lrzsz mkisofs msmtp nano ninja-build p7zip p7zip-full patch pkgconf python2.7 python3 python3-pip libpython3-dev qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
+          sudo -E apt-get -qq autoremove --purge
+          sudo -E apt-get -qq clean
+          sudo -E apt autoremove
+          sudo timedatectl set-timezone "$TZ"
+          sudo mkdir -p /workdir
+          sudo chown $USER:$GROUPS /workdir
+          df -h
+
+      - name: Clone source code
+        working-directory: /workdir
+        run: |
+          df -hT $PWD
+          git clone $REPO_URL -b $REPO_BRANCH openwrt
+          ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+
+      - name: Load custom feeds
+        run: |
+          [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
+          cd openwrt
+
+      - name: Update feeds
+        run: cd openwrt && ./scripts/feeds update -a
+
+      - name: Install feeds
+        run: cd openwrt && ./scripts/feeds install -a
+
+      - name: Load Miscellaneous files
+        uses: actions/download-artifact@main
+        with:
+          name: misc
+
+      - name: Release Miscellaneous files
+        id: tar-x-misc1
+        run: |
+          tar -xf misc.tar.zst
+          rm misc.tar.zst
+
+      - name: Download package pre-config
+        id: package1
+        run: |
+          cd openwrt
+          make defconfig
+          make download -j8
+
+      - name: Cache working directories
+        id: cache-build_dir
+        uses: lzy0702/cache-always@main
+        with:
+          path: |
+            openwrt/.ccache
+            openwrt/build_dir
+            openwrt/staging_dir
+          key: working_dir
+      
+      - name: Prepare working directories
+        id: prepare-working_dir
+        run: |
+          cd openwrt
+          make target/linux/prepare
+
+      - name: Load custom kernel configuration
+        id: config2
+        run: |    
+          mkdir -p openwrt/tmp
+          echo "openwrt/tmp/ made"
+          [ -e $KERNEL_CONFIG_FILE ] && mv $KERNEL_CONFIG_FILE openwrt/tmp/.config
+          echo "kernel .config moved to tmp"
+          mv openwrt/tmp/.config openwrt/build_dir/target-x86_64_musl/linux-x86_64/linux-5.15*/
+          echo "kernel .config moved to build_dir"
+          [ -e $KERNEL_CONFIG_FILE2 ] && mv $KERNEL_CONFIG_FILE2 openwrt/target/linux/x86/config-5.15
+          echo "config-5.15 moved to target"
+      
+      - name: Compile Linux Kernel
+        id: compile2
+        run: |
+          cd openwrt
+          echo -e "$(nproc) thread compile"
+          make target/linux/compile -j$(nproc) || make target/linux/compile -j1 || make target/linux/compile -j1 V=s
+      
+      - name: Tar working directories
+        id: tar-c-working_dir
+        run: tar "-I zstd -9 -T0" -cf directories.tar.zst openwrt/build_dir openwrt/staging_dir openwrt/.ccache
+
+      - name: Upload Compiled Directories
+        uses: actions/upload-artifact@main
+        with:
+          name: build_dir
+          path: directories.tar.zst
+          retention-days: 1
+
+      - name: Tar Miscellaneous files
+        id: tar-c-misc
+        run: tar "-I zstd -9 -T0" -cf misc.tar.zst openwrt/.config openwrt/build_dir/target-x86_64_musl/linux-x86_64/linux-5.15*/.config openwrt/target/linux/x86/config-5.15
+
+      - name: Upload Miscellaneous files
+        uses: actions/upload-artifact@main
+        with:
+          name: misc
+          path: misc.tar.zst
+          retention-days: 1
+
+  job_3:
+    name: Compile Openwrt Packages
+    needs: job_2
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Initialization environment
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          #sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+          sudo -E apt purge *dotnet* *android* azure*
+          sudo -E apt purge google-cloud-sdk microsoft-edge-stable google-chrome-stable firefox powershell hhvm
+          sudo -E apt purge llvm*dev libllvm* temurin*jdk clang-tools* libclang* *mysql* llvm* clang*
+          sudo -E rm -rf /usr/share/dotnet
+          sudo -E rm -rf /usr/local/lib/android
+          sudo -E rm -rf /opt/ghc
+          sudo -E apt-get -qq update
+          sudo -E apt-get -qq upgrade
+          sudo -E apt-get -qq install ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libreadline-dev libssl-dev libtool lrzsz mkisofs msmtp nano ninja-build p7zip p7zip-full patch pkgconf python2.7 python3 python3-pip libpython3-dev qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
+          sudo -E apt-get -qq autoremove --purge
+          sudo -E apt-get -qq clean
+          sudo -E apt autoremove
+          sudo timedatectl set-timezone "$TZ"
+          sudo mkdir -p /workdir
+          sudo chown $USER:$GROUPS /workdir
+          df -h
+
+      - name: Clone source code
+        working-directory: /workdir
+        run: |
+          df -hT $PWD
+          git clone $REPO_URL -b $REPO_BRANCH openwrt
+          ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+
+      - name: Load custom feeds
+        run: |
+          [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
+          cd openwrt
+
+      - name: Update feeds
+        run: cd openwrt && ./scripts/feeds update -a
+
+      - name: Install feeds
+        run: cd openwrt && ./scripts/feeds install -a
+
+      - name: Load Miscellaneous files
+        uses: actions/download-artifact@main
+        with:
+          name: misc
+
+      - name: Release Miscellaneous files
+        id: tar-x-misc1
+        run: |
+          tar -xf misc.tar.zst
+          rm misc.tar.zst
+
+      - name: Download package pre-config
+        id: package1
+        run: |
+          cd openwrt
+          make defconfig
+          make download -j8
+      
+      - name: Load Miscellaneous files
+        uses: actions/download-artifact@main
+        with:
+          name: misc
+      
+      - name: Cache working directories
+        id: cache-build_dir
+        uses: lzy0702/cache-always@main
+        with:
+          path: |
+            openwrt/.ccache
+            openwrt/build_dir
+            openwrt/staging_dir
+          key: working_dir
+
+      - name: Prepare working directories
+        id: prepare-working_dir
+        run: |
+          cd openwrt
+          make target/linux/prepare
+
+      - name: Release Miscellaneous files
+        id: tar-x-misc2
+        run: |
+          tar -xf misc.tar.zst
+          rm misc.tar.zst
+      
+      - name: Compile Packages
+        id: compile2
+        run: |
+          cd openwrt
+          echo -e "$(nproc) thread compile"
+          make package/compile -j$(nproc) || make package/compile -j1 || make package/compile -j1 V=s
+      
+      - name: Tar working directories
+        id: tar-c-working_dir
+        run: tar "-I zstd -9 -T0" -cf directories.tar.zst openwrt/build_dir openwrt/staging_dir openwrt/.ccache
+
+      - name: Upload Compiled Directories
+        uses: actions/upload-artifact@main
+        with:
+          name: build_dir
+          path: directories.tar.zst
+          retention-days: 1
+
+      - name: Tar Miscellaneous files
+        id: tar-c-misc
+        run: tar "-I zstd -9 -T0" -cf misc.tar.zst openwrt/.config openwrt/build_dir/target-x86_64_musl/linux-x86_64/linux-5.15*/.config openwrt/target/linux/x86/config-5.15
+
+      - name: Upload Miscellaneous files
+        uses: actions/upload-artifact@main
+        with:
+          name: misc
+          path: misc.tar.zst
+          retention-days: 1
+
+  job_4:
+    name: Finish Openwrt Compile
+    needs: job_3
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Initialization environment
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          #sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+          sudo -E apt purge *dotnet* *android* azure*
+          sudo -E apt purge google-cloud-sdk microsoft-edge-stable google-chrome-stable firefox powershell hhvm
+          sudo -E apt purge llvm*dev libllvm* temurin*jdk clang-tools* libclang* *mysql* llvm* clang*
+          sudo -E rm -rf /usr/share/dotnet
+          sudo -E rm -rf /usr/local/lib/android
+          sudo -E rm -rf /opt/ghc
+          sudo -E apt-get -qq update
+          sudo -E apt-get -qq upgrade
+          sudo -E apt-get -qq install ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libreadline-dev libssl-dev libtool lrzsz mkisofs msmtp nano ninja-build p7zip p7zip-full patch pkgconf python2.7 python3 python3-pip libpython3-dev qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
+          sudo -E apt-get -qq autoremove --purge
+          sudo -E apt-get -qq clean
+          sudo -E apt autoremove
+          sudo timedatectl set-timezone "$TZ"
+          sudo mkdir -p /workdir
+          sudo chown $USER:$GROUPS /workdir
+          df -h
+
+      - name: Clone source code
+        working-directory: /workdir
+        run: |
+          df -hT $PWD
+          git clone $REPO_URL -b $REPO_BRANCH openwrt
+          ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+
+      - name: Load custom feeds
+        run: |
+          [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
+          cd openwrt
+
+      - name: Update feeds
+        run: cd openwrt && ./scripts/feeds update -a
+
+      - name: Install feeds
+        run: cd openwrt && ./scripts/feeds install -a
+
+      - name: Load Miscellaneous files
+        uses: actions/download-artifact@main
+        with:
+          name: misc
+
+      - name: Release Miscellaneous files
+        id: tar-x-misc1
+        run: |
+          tar -xf misc.tar.zst
+          rm misc.tar.zst
+
+      - name: Download package pre-config
+        id: package1
+        run: |
+          cd openwrt
+          make defconfig
+          make download -j8
+      
+      - name: Load miscellaneous files
+        uses: actions/download-artifact@main
+        with:
+          name: misc
+      
+      - name: Cache working directories
+        id: cache-build_dir
+        uses: lzy0702/cache-always@main
+        with:
+          path: |
+            openwrt/.ccache
+            openwrt/build_dir
+            openwrt/staging_dir
+          key: working_dir
+
+      - name: Prepare working directories
+        id: prepare-working_dir
+        run: |
+          cd openwrt
+          make target/linux/prepare
+
+      - name: Release Miscellaneous files
+        id: tar-x-misc2
+        run: |
+          tar -xf misc.tar.zst
+          rm misc.tar.zst      
+
+      - name: Finish compile
+        id: compile4
+        run: |
+          cd openwrt
+          echo -e "$(nproc) thread compile"
+          make -j$(nproc) || make -j1 || make -j1 V=s
+    
+      - name: Upload bin directory
+        uses: actions/upload-artifact@main
+        if: steps.compile2.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
+        with:
+          name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+          path: openwrt/bin
+
+      - name: Organize files
+        id: organize
+        if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
+        run: |
+          cd openwrt/bin/targets/*/*
+          rm -rf packages
+          echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+          echo "::set-output name=status::success"
+
+      - name: Upload firmware directory
+        uses: actions/upload-artifact@main
+        if: steps.organize.outputs.status == 'success' && !cancelled()
+        with:
+          name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+          path: ${{ env.FIRMWARE }}
+
+      - name: Upload firmware to cowtransfer
+        id: cowtransfer
+        if: steps.organize.outputs.status == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
+        run: |
+          curl -fsSL git.io/file-transfer | sh
+          ./transfer cow --block 2621440 -s -p 64 --no-progress ${FIRMWARE} 2>&1 | tee cowtransfer.log
+          echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
+          echo "::set-output name=url::$(cat cowtransfer.log | grep https | cut -f3 -d" ")"
+
+      - name: Upload firmware to WeTransfer
+        id: wetransfer
+        if: steps.organize.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
+        run: |
+          curl -fsSL git.io/file-transfer | sh
+          ./transfer wet -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wetransfer.log
+          echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
+          echo "::set-output name=url::$(cat wetransfer.log | grep https | cut -f3 -d" ")"
+
+      - name: Generate release tag
+        id: tag
+        if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+        run: |
+          echo "::set-output name=release_tag::$(date +"%Y.%m.%d-%H%M")"
+          touch release.txt
+          [ $UPLOAD_COWTRANSFER = true ] && echo "🔗 [Cowtransfer](${{ steps.cowtransfer.outputs.url }})" >> release.txt
+          [ $UPLOAD_WETRANSFER = true ] && echo "🔗 [WeTransfer](${{ steps.wetransfer.outputs.url }})" >> release.txt
+          echo "::set-output name=status::success"
+
+      - name: Upload firmware to release
+        uses: softprops/action-gh-release@v1
+        if: steps.tag.outputs.status == 'success' && !cancelled()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.tag.outputs.release_tag }}
+          body_path: release.txt
+          files: ${{ env.FIRMWARE }}/*
+          
+      - name: Delete workflow runs
+        uses: GitRML/delete-workflow-runs@main
+        with:
+          retain_days: 3
+          keep_minimum_runs: 5
