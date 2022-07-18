@@ -352,10 +352,9 @@ jobs:
           tar -xf misc.tar.zst
           rm misc.tar.zst
           
-      - name: Remove not working patch
-        id: remove-patch
-        run: |
-          rm openwrt/package/lean/r8125/patches/020*.patch
+      #- name: Remove not working patch
+      #  id: remove-patch
+      #  run: |
           
       - name: Compile Packages
         id: compile2
@@ -487,10 +486,9 @@ jobs:
           tar -xf misc.tar.zst
           rm misc.tar.zst
           
-      - name: Remove not working patch
-        id: remove-patch
-        run: |
-          rm openwrt/package/lean/r8125/patches/020*.patch
+      #- name: Remove not working patch
+      #  id: remove-patch
+      #  run: |
           
       - name: Finish compile
         id: compile4
